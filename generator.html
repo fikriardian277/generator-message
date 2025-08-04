@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generator Link Undangan</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        color: #333;
+      }
+      .container {
+        background-color: #ffffff;
+        padding: 25px 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 600px;
+      }
+      h1 {
+        text-align: center;
+        color: #1c1e21;
+        margin-bottom: 25px;
+        font-size: 24px;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #dddfe2;
+        border-radius: 6px;
+        font-size: 16px;
+        box-sizing: border-box; /* Penting agar padding tidak menambah lebar */
+      }
+      input[type="text"] {
+        margin-bottom: 20px;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 250px;
+        background-color: #f5f6f7;
+        font-family: inherit;
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        margin-top: 20px;
+        background-color: #1877f2;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+      button:hover {
+        background-color: #166fe5;
+      }
+      button.copied {
+        background-color: #2ab57d; /* Warna hijau saat berhasil */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Generator Pesan Undangan</h1>
+
+      <label for="guestNameInput">Nama Tamu:</label>
+      <input
+        type="text"
+        id="guestNameInput"
+        placeholder="Contoh: Fikri Ardian"
+      />
+
+      <label for="messageOutput">Pesan yang Dihasilkan:</label>
+      <textarea id="messageOutput" readonly></textarea>
+
+      <button id="copyButton">Salin Pesan</button>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // ==========================================================
+        // === BLOK KONFIGURASI (EDIT DI SINI SAJA) ===
+        // ==========================================================
+        const CONFIG = {
+          groomName: "Sihabudin Rizki Ramdani ",
+          brideName: "Elvira Maulida ",
+          coupleShortName: "Sihab & Elvira",
+          invitationLink: "https://sihab-elvira.netlify.app//", // Pakai tanda '/' di akhir
+        };
+        // ==========================================================
+
+        const guestNameInput = document.getElementById("guestNameInput");
+        const messageOutput = document.getElementById("messageOutput");
+        const copyButton = document.getElementById("copyButton");
+
+        function generateMessage() {
+          const guestName = guestNameInput.value.trim();
+
+          if (guestName === "") {
+            messageOutput.value = "";
+            return;
+          }
+
+          const urlGuestName = guestName.replace(/ /g, "+");
+
+          // Template pesan sekarang mengambil data dari objek CONFIG
+          const messageTemplate = `Kepada Yth.
+${guestName}
+
+Assalamualaikum Warahmatullahi Wabarakaatuh
+Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, teman sekaligus sahabat, untuk menghadiri acara pernikahan kami :
+
+🤵🏻${CONFIG.groomName}
+
+dengan
+
+👰🏻‍♀ ${CONFIG.brideName}
+
+Berikut link undangan kami, untuk info lengkap dari acara, bisa kunjungi :
+
+${CONFIG.invitationLink}?to=${urlGuestName}
+
+Note: Hasil maksimal buka lewat browser chrome/safari
+
+Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.
+
+Terima Kasih
+
+Hormat kami,
+${CONFIG.coupleShortName}`;
+
+          messageOutput.value = messageTemplate;
+        }
+
+        function copyMessage() {
+          if (messageOutput.value === "") {
+            alert("Silakan masukkan nama tamu terlebih dahulu.");
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(messageOutput.value)
+            .then(() => {
+              copyButton.textContent = "Tersalin!";
+              copyButton.classList.add("copied");
+              setTimeout(() => {
+                copyButton.textContent = "Salin Pesan";
+                copyButton.classList.remove("copied");
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Gagal menyalin teks: ", err);
+              alert("Gagal menyalin teks. Silakan salin secara manual.");
+            });
+        }
+
+        guestNameInput.addEventListener("input", generateMessage);
+        copyButton.addEventListener("click", copyMessage);
+      });
+    </script>
+  </body>
+</html>
