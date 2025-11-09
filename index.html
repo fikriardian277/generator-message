@@ -41,7 +41,7 @@
         border: 1px solid #dddfe2;
         border-radius: 6px;
         font-size: 16px;
-        box-sizing: border-box; /* Penting agar padding tidak menambah lebar */
+        box-sizing: border-box;
       }
       input[type="text"] {
         margin-bottom: 20px;
@@ -56,7 +56,7 @@
         display: block;
         width: 100%;
         padding: 12px;
-        margin-top: 20px;
+        margin-top: 15px;
         background-color: #1877f2;
         color: white;
         border: none;
@@ -70,7 +70,13 @@
         background-color: #166fe5;
       }
       button.copied {
-        background-color: #2ab57d; /* Warna hijau saat berhasil */
+        background-color: #2ab57d;
+      }
+      #sendButton {
+        background-color: #25d366;
+      }
+      #sendButton:hover {
+        background-color: #1ebe5b;
       }
     </style>
   </head>
@@ -85,28 +91,30 @@
         placeholder="Contoh: Fikri Ardian"
       />
 
+      <label for="phoneInput">Nomor WhatsApp (boleh pakai 0 di depan):</label>
+      <input type="text" id="phoneInput" placeholder="Contoh: 081234567890" />
+
       <label for="messageOutput">Pesan yang Dihasilkan:</label>
       <textarea id="messageOutput" readonly></textarea>
 
       <button id="copyButton">Salin Pesan</button>
+      <button id="sendButton">Kirim via WhatsApp</button>
     </div>
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        // ==========================================================
-        // === BLOK KONFIGURASI (EDIT DI SINI SAJA) ===
-        // ==========================================================
         const CONFIG = {
-          groomName: "Sihabudin Rizki Ramdani ",
-          brideName: "Elvira Maulida ",
-          coupleShortName: "Sihab & Elvira",
-          invitationLink: "https://the-wedding-habib-adiba.netlify.app//", // Pakai tanda '/' di akhir
+          groomName: "Aang Suptriatna",
+          brideName: "Tuti Alawiyah",
+          coupleShortName: "Aang & Tuti",
+          invitationLink: "https://pernikahan-aang-tuti.netlify.app/",
         };
-        // ==========================================================
 
         const guestNameInput = document.getElementById("guestNameInput");
+        const phoneInput = document.getElementById("phoneInput");
         const messageOutput = document.getElementById("messageOutput");
         const copyButton = document.getElementById("copyButton");
+        const sendButton = document.getElementById("sendButton");
 
         function generateMessage() {
           const guestName = guestNameInput.value.trim();
@@ -116,30 +124,29 @@
             return;
           }
 
-          const urlGuestName = guestName.replace(/ /g, "+");
+          const urlGuestName = encodeURIComponent(guestName);
 
-          // Template pesan sekarang mengambil data dari objek CONFIG
           const messageTemplate = `Kepada Yth.
 ${guestName}
 
 Assalamualaikum Warahmatullahi Wabarakaatuh
-Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, teman sekaligus sahabat, untuk menghadiri acara pernikahan kami :
+Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, teman sekaligus sahabat, untuk menghadiri acara pernikahan kami:
 
-🤵🏻${CONFIG.groomName}
+\u{1F935}\u{1F3FB} ${CONFIG.groomName}
 
 dengan
 
-👰🏻${CONFIG.brideName}
+\u{1F470}\u{1F3FB} ${CONFIG.brideName}
 
-Berikut link undangan kami, untuk info lengkap dari acara, bisa kunjungi :
+Berikut link undangan kami, untuk info lengkap dari acara, bisa kunjungi:
 
 ${CONFIG.invitationLink}?to=${urlGuestName}
 
-Note: Hasil maksimal buka lewat browser chrome/safari
+Note: Hasil maksimal buka lewat browser Chrome/Safari
 
 Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.
 
-Terima Kasih
+Terima kasih \u{1F64F}
 
 Hormat kami,
 ${CONFIG.coupleShortName}`;
@@ -169,8 +176,42 @@ ${CONFIG.coupleShortName}`;
             });
         }
 
+        function sendWhatsApp() {
+          let phone = phoneInput.value.trim();
+          const message = messageOutput.value.trim();
+
+          if (phone === "") {
+            alert("Masukkan nomor WhatsApp tujuan terlebih dahulu.");
+            return;
+          }
+          if (message === "") {
+            alert(
+              "Masukkan nama tamu terlebih dahulu untuk menghasilkan pesan."
+            );
+            return;
+          }
+
+          // Konversi 0 -> 62
+          if (phone.startsWith("0")) {
+            phone = "62" + phone.substring(1);
+          }
+
+          // === BAGIAN YANG DIGANTI ===
+          // Hapus fungsi encodeForWhatsApp() yang lama
+          // Ganti baris ini:
+          // const encodedMessage = encodeForWhatsApp(message);
+          //
+          // Jadi baris ini:
+          const encodedMessage = encodeURIComponent(message);
+          // ============================
+
+          const waLink = `https://wa.me/${phone}?text=${encodedMessage}`;
+          window.open(waLink, "_blank");
+        }
+
         guestNameInput.addEventListener("input", generateMessage);
         copyButton.addEventListener("click", copyMessage);
+        sendButton.addEventListener("click", sendWhatsApp);
       });
     </script>
   </body>
